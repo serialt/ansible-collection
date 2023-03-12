@@ -1,0 +1,101 @@
+---
+# author: serialt
+# - name: Get system OS.
+#   shell: "uname"
+#   register: get_system_os
+
+# - name: Test
+#   shell: "echo {{ go_os }}"
+#   register: get_arch_test
+# - debug:
+#     var: get_arch_test
+
+- name: Check if go is installed.
+  stat:
+    path: "{{ install_path }}/go"
+  register: go_install_result
+
+# - fail:
+#     msg: The {{ go_root }} is exited, Please check it !!! 
+#   when: not go_install_result.stat.exists
+
+- name: Remove go when it is installed.
+  file:
+    path: "{{ install_path }}/go"
+    state: absent
+  register: go_remove_file
+  when: go_install_result.stat.exists 
+
+- name: Check if go file exists.
+  stat:
+    path: "/tmp/go{{ go_version }}.{{ go_os }}-{{ go_arch }}.tar.gz"
+  register: go_file_exists
+
+- name: Download go file.
+  get_url: 
+    url: "{{ go_mirror_web }}go{{ go_version }}.{{ go_os }}-{{ go_arch }}.tar.gz"
+    dest: "/tmp/go{{ go_version }}.{{ go_os }}-{{ go_arch }}.tar.gz"
+    force: True
+  register: go_download_file
+  when: not go_file_exists.stat.exists 
+
+- name: Create ~/sdk dir.
+  file:
+    path: "{{ install_path }}"
+    state: directory
+  register: create_sdk_dir
+  ignore_errors: True
+
+- name: Install go.
+  unarchive:
+    src: "/tmp/go{{ go_version }}.{{ go_os }}-{{ go_arch }}.tar.gz"
+    remote_src: True
+    dest: "{{ install_path }}"
+    creates: "{{ install_path }}/go{{ go_version }}"
+
+# - name: Create environment file.
+#   shell: touch /etc/profile.d/go.sh
+#   register: create_go_env_file
+
+# - name: Config environment variable.
+#   lineinfile: 
+#     dest: /etc/profile.d/go.sh 
+#     line: "{{ item }}"
+#   with_items:
+#     - "{{ go_proxy }}"
+#     - "{{ go_root }}"
+#     - "{{ go_env_path }}"
+#     - "{{ go_path }}"
+
+- name: Set Go env
+  blockinfile:
+      path: /etc/profile
+      backup: yes
+      create: yes
+      marker: "# ansible go {mark}"
+      block: |
+        export GOROOT={{ go_root }}
+        export GOPROXY={{ go_proxy }}
+        export GOPATH=~/go
+        export GOPRIVATE="{{ go_private }}"
+        export GOBIN=$GOPATH/bin
+        export PATH=$GOROOT/bin:$GOBIN:$PATH
+        export GOINSECURE="{{ go_insecure }}"
+
+- name: Link to go.
+  file:
+    src: "{{ install_path }}/go{{ go_version }}"
+    path: "{{ install_path }}/go"
+    state: link 
+    force: True
+  register: go_link_file
+  ignore_errors: True
+
+- name: Go version.
+  command: "{{ go_root }}/bin/go version"
+  register: result
+  changed_when: false
+  ignore_errors: True
+
+- debug: 
+    var: result.stdout

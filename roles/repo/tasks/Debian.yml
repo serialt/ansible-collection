@@ -1,0 +1,18 @@
+- name: Copy apt source file in Debian.
+  template:
+    src: Debian-10.list.j2
+    dest: /etc/apt/sources.list
+  tags: Debian
+  when: ansible_distribution_version == '10'
+
+- name: Copy apt source file in Debian.
+  template:
+    src: Debian-11.list.j2
+    dest: /etc/apt/sources.list
+  tags: Debian
+  when: ansible_distribution_version == '11'
+
+- name: update cache
+  apt:
+    update_cache: yes
+  tags: update_cache

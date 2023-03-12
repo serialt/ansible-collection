@@ -1,0 +1,94 @@
+# author: serialt
+
+- name: Copy script for centos7. 
+  template:
+    src: CentOS-7.repo.j2
+    dest: /etc/yum.repos.d/CentOS-7.repo
+    mode: 644
+  register: copy_script
+  when: ansible_distribution_major_version == '7' and ansible_distribution == 'CentOS'
+
+
+
+- name: Change all YUM for centos.
+  shell: sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+         -e "s|^#baseurl=http://mirror.centos.org|baseurl={{ repo_source_url }}|g" \
+         -i.bak \
+         /etc/yum.repos.d/*.repo
+  when: ansible_distribution == 'CentOS' and change_all_yum
+  register: change_yum
+
+- name: Install EPEL
+  yum:
+    name: "epel-release"
+    state: present
+  tags: epel
+
+- name: Change EPEL for 7.
+  shell: sed -e 's!^metalink=!#metalink=!g' \
+        -e 's!^#baseurl=!baseurl=!g' \
+        -e 's@https\?://download.fedoraproject.org/pub@{{ repo_source_url }}@g' \
+        -i /etc/yum.repos.d/epel.repo /etc/yum.repos.d/CentOS-7.repo
+  register: change_epel
+  when: ansible_distribution_major_version == '7' and change_all_yum
+  tags: epel
+
+- name: Change EPEL for 8.
+  shell: sed -e 's|^metalink|#metalink|' \
+            -e "s|^#baseurl=https://download.example/pub|baseurl={{ repo_source_url }}|" \
+            -i.bak \
+            -i /etc/yum.repos.d/epel*.repo
+  register: change_epel_8
+  when: ansible_distribution_major_version == '8' and change_all_yum
+  tags: epel
+
+- name: Change EPEL for 9.
+  shell: sed -e 's|^metalink|#metalink|' \
+            -e "s|^#baseurl=https://download.example/pub|baseurl={{ repo_source_url }}|" \
+            -i.bak \
+            -i /etc/yum.repos.d/epel*.repo
+  register: change_epel_9
+  when: 
+    - ansible_distribution_major_version == '9' and change_all_yum
+  tags: epel
+
+- name: Change YUM for Rocky.
+  shell: >
+        sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+            -e 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.aliyun.com/rockylinux|g' \
+            -i.bak \
+            /etc/yum.repos.d/*.repo
+  when: ansible_distribution == 'Rocky' and change_all_yum
+  tags: change_yum
+
+- name: Change YUM for Almalinux.
+  shell: >
+        sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+            -e 's|^# baseurl=https://repo.almalinux.org|baseurl=https://mirrors.aliyun.com|g' \
+            -i.bak \
+            /etc/yum.repos.d/*.repo
+  when: ansible_distribution == 'AlmaLinux' and change_all_yum
+  tags: change_yum
+
+- name: Import key from RLRepo
+  shell: rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+  when: elrepo_install
+  tags: elrepo
+
+- name: Install ELrepo 
+  yum:
+    name: https://www.elrepo.org/elrepo-release-{{ ansible_distribution_major_version }}.el{{ ansible_distribution_major_version }}.elrepo.noarch.rpm
+    state: present
+  when: elrepo_install
+  tags: elrepo
+
+- name: Update yum cache.
+  shell: "yum clean all && yum makecache"
+  args:
+    warn: no
+  tags: update_yum_cache
+
+
+
+
+

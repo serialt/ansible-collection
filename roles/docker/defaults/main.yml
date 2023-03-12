@@ -1,0 +1,41 @@
+---
+docker_package: "docker-ce"
+docker_package_state: present
+
+# service options
+docker_service_state: restarted
+docker_service_enabled: yes
+
+# docker compose options
+docker_install_compose: "yes"
+docker_compose_version: "1.29.2"
+# docker_compose_install_url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
+docker_compose_install_url: https://get.daocloud.io/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
+docker_compose_path: /usr/local/bin/docker-compose
+
+# used only for CentOS
+docker_yum_repo_url: https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+#docker_yum_gpg_key: https://download.docker.com/linux/centos/gpg
+docker_yum_gpg_key: https://mirrors.aliyun.com/docker-ce/linux/centos/gpg
+
+# used only for Ubuntu
+docker_apt_repository: "deb [arch=amd64] https://mirrors.aliyun.com/docker-ce/linux/ubuntu $(lsb_release -cs) stable"
+docker_apt_gpg_key: https://mirrors.aliyun.com/docker-ce/linux/ubuntu/gpg
+# A list of users who will be added to the docker group.
+docker_users: []
+
+docker_data_root: /var/lib/docker
+# 私有harbor，['repo.serialt.com']
+docker_insecure_registries: ["repo.imau.io"]
+
+docker_dns: ["114.114.114.114", "223.5.5.5"]
+
+docker_registry_mirrors:
+  [
+    "https://w9tu3nny.mirror.aliyuncs.com",
+    "https://0648c427d18026450f2dc01eb3f5fa00.mirror.swr.myhuaweicloud.com",
+    "http://hub-mirror.c.163.com",
+    "https://dockerhub.azk8s.cn",
+    "https://docker.mirrors.ustc.edu.cn",
+    "https://registry.docker-cn.com",
+  ]

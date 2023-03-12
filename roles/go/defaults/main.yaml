@@ -1,0 +1,29 @@
+---
+# author: serialt
+
+go_version: "1.19"
+go_arch: "{{ (ansible_architecture == 'aarch64') | ternary('arm64','amd64') }}"
+go_os: "{{ ansible_system | lower }}"
+# https://mirrors.nju.edu.cn/golang/
+# https://mirrors.aliyun.com/golang
+# https://mirrors.ustc.edu.cn/golang/
+go_mirror_web: "https://mirrors.nju.edu.cn/golang/"
+
+go_file: "go{{ go_version }}.{{ go_os }}-{{ go_arch }}.tar.gz"
+go_file_path: "{{ software_files_path }}/{{ go_file }}"
+
+
+# 安装路径
+install_path: "~/sdk"
+
+# 环境变量配置
+go_private: "imau.cc"
+go_insecure: "imau.cc"
+go_root: "{{ install_path }}/go"
+go_proxy: "https://goproxy.cn,direct"
+#go_proxy: "export GOPROXY https://mirrors.aliyun.com/goproxy"
+
+
+
+
+

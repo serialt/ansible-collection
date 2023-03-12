@@ -1,0 +1,11 @@
+- name: Copy apt source file in Ubuntu 1804.
+  template:
+    src: Ubuntu.list.j2
+    dest: /etc/apt/sources.list
+  tags: ubuntu
+  when: ansible_distribution == 'Ubuntu'
+
+- name: update cache
+  apt:
+    update_cache: yes
+  tags: update_cache

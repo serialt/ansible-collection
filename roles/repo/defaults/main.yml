@@ -1,0 +1,17 @@
+# author: serialt
+
+# tsinghua： https://mirrors.tuna.tsinghua.edu.cn
+# huaweicloud: https://repo.huaweicloud.com
+# aliyun:  https://mirrors.aliyun.com
+# 北外: https://mirrors.bfsu.edu.cn
+# tencent:  https://mirrors.cloud.tencent.com
+
+# yum 源地址
+repo_source_url: https://repo.huaweicloud.com
+
+# 改变使用RHEL系官方的所有yum
+change_all_yum: true
+
+# 安装ELRepo源
+elrepo_install: false
+
