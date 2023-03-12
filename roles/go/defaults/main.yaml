@@ -1,7 +1,7 @@
 ---
 # author: serialt
 
-go_version: "1.19"
+go_version: "1.20"
 go_arch: "{{ (ansible_architecture == 'aarch64') | ternary('arm64','amd64') }}"
 go_os: "{{ ansible_system | lower }}"
 # https://mirrors.nju.edu.cn/golang/

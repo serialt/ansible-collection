@@ -7,3 +7,8 @@ python_version: "python3"
 python_package_dev_RedHat:  "python3-devel"
 python_package_dev_Debian:  "python3-dev"
 
+pypi_url: "https://repo.huaweicloud.com/repository/pypi/simple"
+pypi_trusted_host: "repo.huaweicloud.com"
+
+# pypi_url: "http://mirrors.aliyun.com/pypi/simple/"
+# pypi_trusted_host: "mirrors.aliyun.com"

@@ -9,7 +9,7 @@
   "log-driver": "json-file",
   "log-opts": {
     "max-size": "100m",
-    "max-file": "3"
+    "max-file": "5"
   },
   "dns": {{ docker_dns | to_json }},
   "data-root": "{{ docker_data_root }}"
