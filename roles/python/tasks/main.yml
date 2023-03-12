@@ -1,0 +1,10 @@
+- include_tasks: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include_tasks: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- name: 配置pip源
+  template:
+    src: pip.conf.j2
+    dest: /etc/pip.conf

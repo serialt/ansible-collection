@@ -1,0 +1,99 @@
+
+- name: shutdown swap.
+  replace: 
+    dest: /etc/fstab 
+    regexp: '(.*)swap(\s+)swap' 
+    replace: '# \1swap\2swap'
+  tags: swap
+
+- name: env  bashrc.
+  blockinfile:
+    path: "{{ env_file }}"
+    backup: yes
+    create: yes
+    marker: "# ansible os-init {mark}"
+    block: |
+      # history actions record, include action time, user, login ip
+      HISTFILESIZE=100000
+      HISTSIZE=4000
+      UserIP=$(who -u am i | cut -d"("  -f 2 | sed -e "s/[()]//g")
+      export HISTTIMEFORMAT="[%F %T] [`whoami`] "
+
+
+      # aliases
+      alias ll="ls -cal --time-style '+%Y-%m-%d %H:%M:%S'"
+  tags: env
+
+- name: setting sshd.
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  with_items:
+    # - { regexp: "^#?UseDNS", line: "UseDNS no" }
+    # - { regexp: "^#?UsePAM", line: "UsePAM yes" }
+    - { regexp: "^PasswordAuthentication", line: "PasswordAuthentication no" }
+    # - { regexp: "^GSSAPIAuthentication", line: "#GSSAPIAuthentication no" }
+    # - { regexp: "^GSSAPICleanupCredentials", line: "#GSSAPICleanupCredentials no" }
+  tags:
+   - sshd
+
+- name: env | ssh login banner.
+  copy:
+    src: ssh-login-banner.sh
+    dest: /etc/profile.d/
+  tags:
+   - ssh-login-banner
+
+- include_tasks: setup-RedHat.yml
+  when: ansible_os_family == 'RedHat'
+
+- include_tasks: setup-Debian.yml
+  when: ansible_os_family == 'Debian'
+
+- include_tasks: ssh-authorized-key.yml
+
+
+
+- block:
+  - name: upgrade | Update all fractures to the latest version with yum.
+    yum:
+      name: '*'
+      state: latest
+      update_only: yes
+    when: (ansible_pkg_mgr == 'yum') or (ansible_pkg_mgr == 'dnf')
+      
+  - name: upgrade | Update all fractures to the latest version with apt.
+    apt:
+      upgrade: dist
+    when: "ansible_pkg_mgr == 'apt'"
+  tags:
+   - upgrade
+
+- name: 重启服务管理
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  loop:
+    - sshd
+    - fail2ban
+    - rsyslog
+
+- block:
+  - name: enable | Add execute permissions to the rc.local file.
+    lineinfile:
+      path: /etc/rc.local
+      line: exit 0
+      mode: u+rwx
+      create: yes
+  
+  - name: enable | Set rc-local to boot.
+    service: name=rc-local enabled=yes
+  when: "ansible_service_mgr == 'systemd'"
+  tags:
+   - rc.local
+
+- debug:
+    msg: "部分软件更新需要重启后才正常工作, 请确定是否可以重启 !!! "

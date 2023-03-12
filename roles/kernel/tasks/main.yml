@@ -1,0 +1,24 @@
+- name: 导入EPRepo公钥
+  shell: rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+  tags: import_eprepo_gpg
+- name: 配置ELRepo源
+  yum:
+    name: https://www.elrepo.org/elrepo-release-7.el7.elrepo.noarch.rpm
+    state: present
+  tags: download_elrepo
+- name: update_kernel
+  yum:
+    update_cache: yes
+    enablerepo: elrepo-kernel
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - kernel-lt
+- name: 修改内核启动顺序
+  shell: sed -ri "s/GRUB_DEFAULT=saved/GRUB_DEFAULT=0/"  /etc/default/grub
+  tags: modify_kernel_version
+- name: 重新配置内核
+  shell: grub2-mkconfig  -o  /boot/grub2/grub.cfg
+  tags: reconfig_kernel
+- debug:
+    msg: "升级内核后需要重启才生效"   

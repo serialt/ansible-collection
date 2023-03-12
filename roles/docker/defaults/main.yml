@@ -8,7 +8,7 @@ docker_service_enabled: yes
 
 # docker compose options
 docker_install_compose: "yes"
-docker_compose_version: "1.29.2"
+docker_compose_version: "2.15.1"
 # docker_compose_install_url: https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
 docker_compose_install_url: https://get.daocloud.io/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-Linux-x86_64
 docker_compose_path: /usr/local/bin/docker-compose

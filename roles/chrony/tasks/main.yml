@@ -1,0 +1,42 @@
+# serialt
+
+- name: Ensure ntp packages are removed.
+  package: 
+    name: ntp 
+    state: absent
+  
+- name: Ensure chrony packages are installed.
+  package: 
+    name: chrony 
+    state: present
+
+- name: Change chrony server on chrony.conf.
+  template: 
+    src: chrony.conf.j2 
+    dest: /etc/chrony.conf 
+    backup: yes
+
+- name: Allow chrony client to access.
+  lineinfile:
+    path: /etc/chrony.conf
+    regexp: '^#allow 192.168.0.0/16'
+    line: allow {{ set_ntp_allow_net }}
+    state: present
+  when: set_ntp_server | bool 
+  
+- name: Configuration the localtime to chrony server time.
+  lineinfile:
+    path: /etc/chrony.conf
+    regexp: '^#local stratum 10'      
+    line: 'local stratum 10'
+  when: set_ntp_local_server | bool 
+
+- name: "Set timezone"
+  timezone:
+    name: Asia/Shanghai
+
+- name: Configuration hardware time.
+  shell: sleep 3 && timedatectl set-local-rtc 1
+  when: set_hardware_time | bool
+  notify:
+    - restart chronyd

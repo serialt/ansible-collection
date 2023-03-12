@@ -1,0 +1,10 @@
+- name: 创建密钥
+  shell: "[[ ! -f ~/.ssh/id_rsa ]] && ssh-keygen -t rsa -f ~/.ssh/id_rsa -N '' -C '{{ ssh_key_message }}'"
+  register: ssh_keygen
+  tags: ssh-keygen
+  ignore_errors: yes
+
+# - name: ssh-copy
+#   authorized_key: 
+#     user: hoxis 
+#     key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"

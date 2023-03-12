@@ -1,0 +1,12 @@
+- name: Install python.
+  apt: 
+    name: "{{ python_version }}"
+    state: present
+    update_cache: yes
+
+
+- name: Install python dev.
+  apt: 
+    name: "{{ python_package_dev_Debian   }}"
+    state: present
+  when: python_package_dev_Debian is defined

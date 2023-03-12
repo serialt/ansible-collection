@@ -1,0 +1,13 @@
+disable_firewalld: true
+
+# 服务器登录后显示信息
+login_info: "        Welcome to IMAU"
+
+env_file: "/etc/profile"
+
+# fail2ban 忽略登录的ip，如：192.168.0.1/16 10.0.0.0/16
+fail2ban_ignore_ip: ""
+
+ssh_key_message: "serialt@qq.com"
+
+set_dev_env: true

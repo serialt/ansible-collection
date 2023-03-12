@@ -1,0 +1,41 @@
+- name: Set login info.
+  shell: echo  "\n {{  login_info  }}\n" > /etc/motd
+  tags: motd
+
+- name: setting | vim.
+  blockinfile:
+    path: "/etc/vim/vimrc"
+    backup: yes
+    create: yes
+    marker: '" ansible os-init {mark}'
+    block: |
+      set autowrite
+      set syntax=on
+      set noeb
+      set autoindent
+      set cindent
+      set shiftwidth=4
+      set softtabstop=4 
+      set tabstop=4
+      set expandtab
+      set history=1000
+      set ignorecase
+      set showmatch
+      set matchtime=1
+      set enc=utf-8
+      set nobackup 
+  tags:
+   - vim
+
+- name: 安装常用软件
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - unzip
+    - fail2ban
+- name: Copy fail2ban config file in Debian.
+  template:
+    src: Debian-jail.conf.j2
+    dest: /etc/fail2ban/jail.conf
+  tags: fail2ban

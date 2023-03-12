@@ -1,0 +1,21 @@
+# serialt
+
+# ntp时间服务器
+ntp_server1: ntp1.aliyun.com iburst
+ntp_server2: ntp2.aliyun.com iburst
+ntp_server3: ntp3.aliyun.com iburst
+ntp_server4: ntp4.aliyun.com iburst
+
+
+#设置ntp服务器server
+set_ntp_server: no
+set_ntp_allow_net: 192.168.0.0/16
+
+# 把本地时间也设置为服务器时间
+set_ntp_local_server: no
+
+# 设置时区
+time_zone: Asia/Shanghai
+
+# 设置硬件时间
+set_hardware_time: yes

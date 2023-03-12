@@ -1,0 +1,9 @@
+# 安装python
+python_package_state: yes
+
+# 安装的python 版本
+python_version: "python3"
+
+python_package_dev_RedHat:  "python3-devel"
+python_package_dev_Debian:  "python3-dev"
+
