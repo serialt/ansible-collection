@@ -18,7 +18,7 @@ collections:
   version: master
 
 
-$ [serialt@imau sugar]$ ansible-galaxy collection install -r requirements.yml
+[serialt@sugar sugar]$ ansible-galaxy collection install -r requirements.yml
 ```
 
 
